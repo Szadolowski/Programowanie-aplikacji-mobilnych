@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/navigation_tracker"
+        android:icon="@android:drawable/ic_menu_directions"
+        android:title="Kroki" />
+    <item
+        android:id="@+id/navigation_leaderboard"
+        android:icon="@android:drawable/btn_star"
+        android:title="Ranking" />
+    <!-- Puste miejsce na środkowy przycisk FloatingActionButton -->
+    <item
+        android:id="@+id/placeholder"
+        android:title=""
+        android:enabled="false" />
+    <item
+        android:id="@+id/navigation_map"
+        android:icon="@android:drawable/ic_menu_mapmode"
+        android:title="Mapa" />
+    <item
+        android:id="@+id/navigation_profile"
+        android:icon="@android:drawable/ic_menu_myplaces"
+        android:title="Profil" />
+</menu>
