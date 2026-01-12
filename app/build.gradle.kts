@@ -37,6 +37,13 @@ android {
     buildFeatures {
         viewBinding = true
     }
+    
+    // Dodajemy konfigurację pakowania dla wsparcia 16 KB page size
+    packaging {
+        jniLibs {
+            useLegacyPackaging = true
+        }
+    }
 }
 
 dependencies {
@@ -65,5 +72,7 @@ dependencies {
 
     // Google Play Services
     implementation("com.google.android.gms:play-services-location:21.2.0")
-    implementation("com.google.android.gms:play-services-maps:18.2.0")
+    
+    // Mapbox Maps SDK
+    implementation("com.mapbox.maps:android:11.3.0")
 }

@@ -7,8 +7,7 @@
     <item
         android:id="@+id/navigation_leaderboard"
         android:icon="@android:drawable/btn_star"
-        android:title="Ranking" />
-    <!-- Puste miejsce na środkowy przycisk FloatingActionButton -->
+        android:title="Wyniki" />
     <item
         android:id="@+id/placeholder"
         android:title=""

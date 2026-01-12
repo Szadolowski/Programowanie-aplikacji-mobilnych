@@ -1,23 +1,25 @@
 package com.example.steptrack.ui
 
-import android.Manifest
 import android.content.Context
-import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
+import com.example.steptrack.data.AppDatabase
+import com.example.steptrack.data.DailySummary
+import com.example.steptrack.data.Workout
 import com.example.steptrack.databinding.FragmentTrackerBinding
+import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.math.sqrt
 
 class TrackerFragment : Fragment(), SensorEventListener {
 
@@ -27,22 +29,13 @@ class TrackerFragment : Fragment(), SensorEventListener {
     private val viewModel: StepViewModel by activityViewModels()
 
     private lateinit var sensorManager: SensorManager
-    private var stepCounterSensor: Sensor? = null
+    private var accelerometer: Sensor? = null
     
-    // Wartość czujnika w momencie kliknięcia "Start"
-    private var initialStepCount = -1f 
+    private var magnitudePrevious = 0.0
+    private val stepThreshold = 6.0
     private val dailyGoal = 10000
 
-    // Rejestrator prośby o uprawnienia (wymagane od Android 10)
-    private val requestPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted: Boolean ->
-        if (isGranted) {
-            setupStepCounter()
-        } else {
-            Toast.makeText(requireContext(), "Brak uprawnień do liczenia kroków", Toast.LENGTH_SHORT).show()
-        }
-    }
+    private var workoutStartTime: Long = 0
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -57,16 +50,16 @@ class TrackerFragment : Fragment(), SensorEventListener {
         super.onViewCreated(view, savedInstanceState)
 
         sensorManager = requireContext().getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+        
         binding.stepsProgressBar.max = dailyGoal
 
-        checkPermissionsAndSetup()
-
         binding.startButton.setOnClickListener {
-            if (!viewModel.isTracking.value!!) {
-                // Przy starcie resetujemy bazową wartość czujnika
-                initialStepCount = -1f 
+            if (viewModel.isTracking.value == true) {
+                saveWorkoutAndStop()
+            } else {
+                startNewWorkout()
             }
-            viewModel.toggleTracking()
         }
 
         viewModel.stepCount.observe(viewLifecycleOwner) { steps ->
@@ -84,28 +77,40 @@ class TrackerFragment : Fragment(), SensorEventListener {
         }
     }
 
-    private fun checkPermissionsAndSetup() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            when {
-                ContextCompat.checkSelfPermission(
-                    requireContext(),
-                    Manifest.permission.ACTIVITY_RECOGNITION
-                ) == PackageManager.PERMISSION_GRANTED -> {
-                    setupStepCounter()
-                }
-                else -> {
-                    requestPermissionLauncher.launch(Manifest.permission.ACTIVITY_RECOGNITION)
-                }
-            }
-        } else {
-            setupStepCounter()
-        }
+    private fun startNewWorkout() {
+        workoutStartTime = System.currentTimeMillis()
+        viewModel.resetSteps()
+        viewModel.setTracking(true)
     }
 
-    private fun setupStepCounter() {
-        stepCounterSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
-        if (stepCounterSensor == null) {
-            Toast.makeText(requireContext(), "Czujnik kroków nie jest dostępny na tym urządzeniu", Toast.LENGTH_LONG).show()
+    private fun saveWorkoutAndStop() {
+        val endTime = System.currentTimeMillis()
+        val steps = viewModel.stepCount.value ?: 0
+        val distance = (steps * 0.7)
+        
+        val sdf = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
+        val dateStr = sdf.format(Date(workoutStartTime))
+
+        lifecycleScope.launch {
+            val db = AppDatabase.getDatabase(requireContext())
+            val dao = db.workoutDao()
+
+            // Dodajemy lub aktualizujemy wpis dzienny
+            dao.insertDailySummary(DailySummary(dateStr, 0))
+
+            // Tworzymy NOWY unikalny trening
+            val workout = Workout(
+                id = 0, // Auto-generowanie klucza głównego
+                parentDate = dateStr,
+                startTime = workoutStartTime,
+                endTime = endTime,
+                steps = steps,
+                distanceMetres = distance,
+                routePointsJson = "[]"
+            )
+            dao.insertWorkout(workout)
+            
+            viewModel.setTracking(false)
         }
     }
 
@@ -120,7 +125,7 @@ class TrackerFragment : Fragment(), SensorEventListener {
     }
 
     private fun registerSensor() {
-        stepCounterSensor?.let {
+        accelerometer?.let {
             sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_UI)
         }
     }
@@ -130,23 +135,19 @@ class TrackerFragment : Fragment(), SensorEventListener {
     }
 
     override fun onSensorChanged(event: SensorEvent?) {
-        if (event != null && event.sensor.type == Sensor.TYPE_STEP_COUNTER) {
-            val totalStepsSinceBoot = event.values[0]
+        if (event != null && event.sensor.type == Sensor.TYPE_ACCELEROMETER) {
+            val x = event.values[0]
+            val y = event.values[1]
+            val z = event.values[2]
 
-            if (initialStepCount == -1f) {
-                // Pierwszy odczyt po kliknięciu "Start" staje się naszym punktem odniesienia
-                initialStepCount = totalStepsSinceBoot
-            }
+            val magnitude = sqrt((x * x + y * y + z * z).toDouble())
+            val magnitudeDelta = magnitude - magnitudePrevious
+            magnitudePrevious = magnitude
 
-            // Obliczamy kroki zrobione tylko w tej sesji
-            val currentSessionSteps = (totalStepsSinceBoot - initialStepCount).toInt()
-            
-            // Możemy tutaj albo nadpisywać wynik, albo dodawać do istniejących 
-            // W tej implementacji aktualizujemy wynik sesji
-            if (viewModel.isTracking.value == true) {
-                // Aktualizujemy kroki w ViewModelu
-                // Zakładamy, że chcemy widzieć postęp od momentu kliknięcia Start
-                viewModel.setSteps(currentSessionSteps)
+            if (magnitudeDelta > stepThreshold) {
+                if (viewModel.isTracking.value == true) {
+                    viewModel.addStep()
+                }
             }
         }
     }
@@ -162,8 +163,6 @@ class TrackerFragment : Fragment(), SensorEventListener {
 
     override fun onPause() {
         super.onPause()
-        // Nie wyłączamy całkowicie, aby sensor mógł pracować w tle (jeśli to byłaby usługa)
-        // Ale we fragmencie odpinamy listenera
         unregisterSensor()
     }
 

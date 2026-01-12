@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">StepTrack</string>
+    <!-- Mapbox Public Access Token -->
+    <string name="mapbox_access_token">pk.eyJ1Ijoic3phZG9sb3dza2kiLCJhIjoiY21rYmxiOGNyMDF1ZDNmc2F6eG82b3hxdiJ9.0Wzdbd8XIJ0A82Onj4reUw</string>
 </resources>
