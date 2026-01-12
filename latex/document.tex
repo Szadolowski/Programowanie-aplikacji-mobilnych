@@ -1,4 +1,3 @@
-
 %╔════════════════════════════╗
 %║		Szablon wykonał		  ║
 %║	mgr inż. Dawid Kotlarski  ║
@@ -55,101 +54,50 @@
 		{AKADEMIA NAUK STOSOWANYCH W NOWYM SĄCZU\\Wydział Nauk Inżynieryjnych, Katedra informatyki} &  &  &  &  &  \\
 		Przedmiot:  & Programowanie urządzeń mobilnych – projekt, mgr inż. Dawid Kotlarski          &  &  &  &  \\
 		Temat:      & Początek projektu                                                          &  &  &  &  \\
-		Grupa:      & IS-2(s)P1  & Nr raportu: & 1 & Data: & 09.01.2026 \\
+		Grupa:      & IS-2(n)P1  & Nr raportu: & 1 & Data: & 09.01.2026 \\
 		Osoby:      & Rafał Curzydło,  Dominik Jonik                                          &  &  &  &            
 	\end{tblr}
 \end{table}
 
+\vspace{-0.5cm} % Lekkie podciągnięcie treści pod tabelę
 
-\section{Wykonane zadania}
-
+\section*{Wykonane zadania}
 W bieżącym sprincie prace koncentrowały się na budowie interfejsu użytkownika oraz logiki sensorów, a także na opracowaniu wymagań w dokumentacji.
 
 \begin{itemize}
-    \item \textbf{Implementacja Interfejsu (UI):}
-    \begin{itemize}
-        \item Zbudowano kompletny szkielet aplikacji oparty na Fragmentach i \texttt{BottomNavigationView}.
-        \item Przygotowano widok "Historia" z wykorzystaniem \texttt{RecyclerView}. W celu weryfikacji czytelności interfejsu zaimplementowano wyświetlanie przykładowych danych testowych (tzw. \textit{hardcoded mock data}).
-        \item Zaktualizowano stylistykę do Material Design 3, dodając dedykowany przycisk sterujący (FAB) na dolnym pasku.
-    \end{itemize}
-
-    \item \textbf{Logika Sensorów:}
-    \begin{itemize}
-        \item Zgodnie z założeniami dokumentacji[cite: 59], zaimplementowano obsługę sprzętowego licznika kroków (\texttt{TYPE\_STEP\_COUNTER}), rezygnując z mniej dokładnego akcelerometru.
-        \item Dodano obsługę uprawnień systemowych niezbędnych do działania w tle.
-    \end{itemize}
-
-    \item \textbf{Dokumentacja:}
-    \begin{itemize}
-        \item Opracowano rozdział "Ogólne określenie wymagań"[cite: 16], definiujący cele biznesowe i funkcjonalne.
-        \item Sporządzono specyfikację techniczną w rozdziale "Określenie wymagań szczegółowych"[cite: 49].
-    \end{itemize}
+    \item \textbf{Interfejs (UI):} Zbudowano szkielet (Fragmenty, \texttt{BottomNavigationView}) oraz widok Historii
+    
+    (\texttt{RecyclerView}) z danymi testowymi. Wdrożono styl Material Design 3 z przyciskiem FAB.
+    \item \textbf{Logika Sensorów:} Zaimplementowano obsługę sprzętowego licznika kroków (\texttt{TYPE\_STEP\_COUNTER}) oraz wymagane uprawnienia systemowe.
+    \item \textbf{Dokumentacja:} Opracowano cele biznesowe i specyfikację techniczną (wymagania ogólne i szczegółowe).
 \end{itemize}
 
-\newpage
-
-% Sekcja ze zrzutami ekranu (nazwy plików zgodnie z ustaleniami)
-\begin{figure}[h!]
-    \centering
-    \begin{minipage}{0.45\textwidth}
-        \centering
-        \includegraphics[width=0.9\textwidth]{rys/tracker.jpg}
-        \caption{Ekran główny (Licznik)}
-    \end{minipage}\hfill
-    \begin{minipage}{0.45\textwidth}
-        \centering
-        \includegraphics[width=0.9\textwidth]{rys/historia.jpg}
-        \caption{Widok Historii (dane testowe)}
-    \end{minipage}
-\end{figure}
-
-\begin{figure}[h!]
-    \centering
-    \begin{minipage}{0.45\textwidth}
-        \centering
-        \includegraphics[width=0.9\textwidth]{rys/profil.jpg}
-        \caption{Profil użytkownika}
-    \end{minipage}\hfill
-    \begin{minipage}{0.45\textwidth}
-        \centering
-        \includegraphics[width=0.9\textwidth]{rys/mapa.jpg}
-        \caption{Widok mapy (w przygotowaniu)}
-    \end{minipage}
-\end{figure}
-
-
-\section{Niewykonane zadania}
-
-Ze względu na konieczność głębszej analizy technologicznej, przesunięto realizację następujących elementów:
+\section*{Niewykonane zadania}
+Ze względu na konieczność analizy technologicznej przesunięto:
 \begin{itemize}
-    \item \textbf{Persystencja danych:} Nie zaimplementowano jeszcze docelowej bazy danych SQLite. Obecnie aplikacja nie zapamiętuje trwale historii po zamknięciu procesu – dane w widoku historii są symulowane.
-    \item \textbf{Moduł Mapy:} Nie wybrano ostatecznego dostawcy map (Google Maps SDK vs OpenStreetMap). Widok mapy jest przygotowany w nawigacji, ale nie wyświetla jeszcze podkładu kartograficznego ani trasy.
+    \item \textbf{Persystencja:} Brak bazy SQLite. Dane w historii są symulowane i nie są zapamiętywane po zamknięciu procesu.
+    \item \textbf{Mapy:} Nie wybrano ostatecznego dostawcy (Google vs OSM). Widok mapy jest gotowy w nawigacji, ale nie wyświetla podkładu ani trasy.
 \end{itemize}
 
-\section{Napotkane problemy}
-
-Podczas prac projektowych zidentyfikowano kluczowe problemy do rozwiązania:
+\section*{Napotkane problemy}
 \begin{itemize}
-    \item \textbf{Wybór technologii mapowej:} Zespół napotkał problem decyzyjny dotyczący doboru SDK do obsługi map. Należy przeanalizować, czy darmowy OpenStreetMap spełni wymagania dotyczące rysowania trasy, czy konieczne będzie użycie komercyjnego Google Maps SDK (co wiąże się z konfiguracją kluczy API).
-    \item \textbf{Struktura bazy danych:} Wyzwaniem jest zaprojektowanie optymalnego schematu tabel w SQLite, który pozwoli na wydajne zapisywanie tysięcy punktów współrzędnych GPS jednej trasy bez spowalniania działania aplikacji na starszych telefonach.
+    \item \textbf{Technologia map:} Decyzja między darmowym OpenStreetMap a komercyjnym Google Maps SDK (wydajność rysowania trasy vs klucze API).
+    \item \textbf{Baza danych:} Zaprojektowanie schematu SQLite, który wydajnie obsłuży zapis tysięcy punktów GPS bez spowalniania UI na starszych urządzeniach.
 \end{itemize}
 
-\section{Zadania na kolejny tydzień}
-
-Plany na najbliższy sprint obejmują:
+\section*{Zadania na kolejny tydzień}
 \begin{itemize}
-    \item Przeprowadzenie researchu i podjęcie ostatecznej decyzji w sprawie biblioteki mapowej.
-    \item Implementacja silnika bazy danych SQLite (stworzenie klasy \texttt{SQLiteOpenHelper} oraz kontraktów tabel).
-    \item Zastąpienie danych "hardcoded" w historii danymi pobieranymi dynamicznie z nowo utworzonej bazy.
+    \item Wybór i implementacja biblioteki mapowej.
+    \item Stworzenie silnika bazy danych SQLite (klasa \texttt{SQLiteOpenHelper}, kontrakty).
+    \item Zastąpienie danych "hardcoded" w historii danymi pobieranymi dynamicznie z bazy.
 \end{itemize}
 
-\section{Stan dokumentacji projektowej}
-
-Dokumentacja została znacząco rozbudowana i przesłana w formie pliku PDF. Kluczowe zmiany obejmują:
+\section*{Stan dokumentacji}
+Dokumentacja (PDF) została rozbudowana o:
 \begin{itemize}
-    \item Dodanie szczegółowego opisu założeń funkcjonalnych (Licznik, Tryb Treningowy, Dziennik)[cite: 22].
-    \item Zdefiniowanie koncepcji technicznej opartej na lokalnej bazie SQLite oraz sensorach sprzętowych[cite: 52].
-    \item Określenie wytycznych UX/UI, kładących nacisk na wysoki kontrast i czytelność w warunkach terenowych[cite: 41].
+    \item Szczegółowe założenia funkcjonalne (Licznik, Tryb Treningowy, Dziennik).
+    \item Koncepcję techniczną (lokalna baza SQLite, sensory sprzętowe).
+    \item Wytyczne UX/UI (wysoki kontrast, czytelność w terenie).
 \end{itemize}
 
 \end{document}
