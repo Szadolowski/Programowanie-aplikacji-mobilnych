@@ -12,4 +12,13 @@
 /captures
 .externalNativeBuild
 .cxx
-local.properties
+Thumbs.db
+*.apk
+*.aab
+*.jks
+*.keystore
+*.pem
+*.p12
+*.key
+google-services.json
+*.log
