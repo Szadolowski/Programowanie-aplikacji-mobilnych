@@ -100,9 +100,10 @@
                         android:text="Suma kroków"
                         android:textAppearance="?attr/textAppearanceLabelMedium"/>
                     <TextView
+                        android:id="@+id/totalStepsText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="124 500"
+                        android:text="0"
                         android:textAppearance="?attr/textAppearanceTitleLarge"
                         android:textColor="?attr/colorPrimary"/>
                 </LinearLayout>
@@ -127,9 +128,10 @@
                         android:text="Dystans"
                         android:textAppearance="?attr/textAppearanceLabelMedium"/>
                     <TextView
+                        android:id="@+id/totalDistanceText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="93.4 km"
+                        android:text="0.0 km"
                         android:textAppearance="?attr/textAppearanceTitleLarge"
                         android:textColor="?attr/colorPrimary"/>
                 </LinearLayout>

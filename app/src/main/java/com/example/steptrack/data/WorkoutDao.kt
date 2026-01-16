@@ -5,7 +5,6 @@ import androidx.room.*
 
 @Dao
 interface WorkoutDao {
-    // ZMIANA: Używamy IGNORE, aby nie nadpisywać (i nie usuwać kaskadowo) istniejącego dnia
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertDailySummary(summary: DailySummary)
 
@@ -18,6 +17,16 @@ interface WorkoutDao {
     @Transaction
     @Query("SELECT * FROM daily_summaries ORDER BY date DESC")
     fun getAllDaysWithWorkouts(): LiveData<List<DayWithWorkouts>>
+
+    @Query("SELECT * FROM workouts WHERE id = :id")
+    suspend fun getWorkoutById(id: Long): Workout?
+
+    // DODANO: Zapytania do statystyk globalnych
+    @Query("SELECT SUM(steps) FROM workouts")
+    fun getTotalSteps(): LiveData<Int?>
+
+    @Query("SELECT SUM(distanceMetres) FROM workouts")
+    fun getTotalDistance(): LiveData<Double?>
 
     @Query("SELECT * FROM workouts WHERE parentDate = :date ORDER BY startTime ASC")
     fun getWorkoutsForDay(date: String): LiveData<List<Workout>>
